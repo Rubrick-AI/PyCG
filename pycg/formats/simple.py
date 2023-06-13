@@ -26,8 +26,4 @@ class Simple(BaseFormatter):
         self.cg_generator = cg_generator
 
     def generate(self):
-        output = self.cg_generator.output()
-        output_cg = {}
-        for node in output:
-            output_cg[node] = list(output[node])
-        return output_cg
+        return self.cg_generator.output()
