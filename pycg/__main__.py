@@ -54,10 +54,14 @@ def main():
     )
     parser.add_argument("-o", "--output", help="Output path", default=None)
 
+    entry_points_contents = {}
     args = parser.parse_args()
+    for filename in args.entry_point:
+        with open(filename, "rt", errors="replace") as f:
+            entry_points_contents[filename] = f.read()
 
     cg = CallGraphGenerator(
-        args.entry_point, args.package, args.max_iter, args.operation
+        args.entry_point, entry_points_contents, args.package, args.max_iter, args.operation
     )
     cg.analyze()
 

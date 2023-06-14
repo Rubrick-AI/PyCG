@@ -30,6 +30,7 @@ class KeyErrProcessor(ProcessingBase):
     def __init__(
         self,
         filename,
+        contents,
         modname,
         import_manager,
         scope_manager,
@@ -38,7 +39,7 @@ class KeyErrProcessor(ProcessingBase):
         key_errs,
         modules_analyzed=None,
     ):
-        super().__init__(filename, modname, modules_analyzed)
+        super().__init__(filename, contents, modname, modules_analyzed)
         # parent directory of file
         self.parent_dir = os.path.dirname(filename)
 

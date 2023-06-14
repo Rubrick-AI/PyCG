@@ -35,13 +35,14 @@ from pycg.processing.preprocessor import PreProcessor
 
 
 class CallGraphGenerator(object):
-    def __init__(self, entry_points, package, max_iter, operation):
+    def __init__(self, entry_points, contents, package, max_iteration, operation):
         self.entry_points = entry_points
         self.package = package
         self.state = None
-        self.max_iter = max_iter
+        self.max_iter = max_iteration
         self.operation = operation
         self.setUp()
+        self.entry_points_contents = contents
 
     def setUp(self):
         self.import_manager = ImportManager()
@@ -145,6 +146,7 @@ class CallGraphGenerator(object):
 
                 processor = cls(
                     input_file,
+                    self.entry_points_contents[entry_point],
                     input_mod,
                     modules_analyzed=modules_analyzed,
                     *args,

@@ -26,7 +26,7 @@ from pycg.machinery.definitions import Definition
 
 
 class ProcessingBase(ast.NodeVisitor):
-    def __init__(self, filename, modname, modules_analyzed):
+    def __init__(self, filename, contents, modname, modules_analyzed):
         self.modname = modname
 
         self.modules_analyzed = modules_analyzed
@@ -34,9 +34,7 @@ class ProcessingBase(ast.NodeVisitor):
 
         self.filename = os.path.abspath(filename)
 
-        with open(filename, "rt", errors="replace") as f:
-            self.contents = f.read()
-
+        self.contents = contents
         self.name_stack = []
         self.method_stack = []
         self.last_called_names = None
@@ -504,8 +502,10 @@ class ProcessingBase(ast.NodeVisitor):
             return
 
         self.import_manager.set_current_mod(imp, fname)
+        with open(fname, "rt", errors="replace") as f:
+            contents = f.read()
 
-        visitor = cls(fname, imp, *args, **kwargs)
+        visitor = cls(fname, contents, imp, *args, **kwargs)
         visitor.analyze()
         self.merge_modules_analyzed(visitor.get_modules_analyzed())
 

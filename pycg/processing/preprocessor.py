@@ -29,6 +29,7 @@ class PreProcessor(ProcessingBase):
     def __init__(
         self,
         filename,
+        contents,
         modname,
         import_manager,
         scope_manager,
@@ -37,7 +38,7 @@ class PreProcessor(ProcessingBase):
         module_manager,
         modules_analyzed=None,
     ):
-        super().__init__(filename, modname, modules_analyzed)
+        super().__init__(filename, contents, modname, modules_analyzed)
 
         self.modname = modname
         self.mod_dir = "/".join(self.filename.split("/")[:-1])
