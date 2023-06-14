@@ -141,3 +141,36 @@ pip3 install mock
 ```
 make test
 ```
+
+
+# IMPORTANT INFO (Benny Time 😎)
+
+Everything above is left untouched. Here I give updates relavant to the changes I made. 
+
+All I really did is alter the call graph construction to pass around crucial location info
+from the AST node. That part may be clear from the changes. 
+
+What may be insightful to see is the mapping from the paper to the implementation.
+
+In section III A, the core algorithm is described at a high level, consisting of
+1) Syntax
+2) State
+3) Analysis Rules
+
+Section B is then call graph generation.
+
+The core work is summarized in the file pycg/pycg.py in the member
+function `analyze` on line 161.
+`do_pass` proccesses the data using the specified processor.
+
+- PreProcessor
+  * This performs the Syntax step, Section III A 1
+  * Used pycg/pycg.py::163 and defined in the file pycg/prcoessing/PreProcessor.py
+- extract_state + PostProcessor
+  * This performs the State step and Analysis Rules, Section III A 2-3
+  * Used pycg/pycg.py::177 and 180 and defined in the file pycg/processing/PostProcessor.py
+- CallGraphProcessor
+  * This performs the call graph generation Section III B
+  * Used pycg/pycg.py::180 and defined in the file
+
+

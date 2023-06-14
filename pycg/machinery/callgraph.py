@@ -59,8 +59,12 @@ class CallGraph(object):
     def get_modules(self):
         return self.modnames
 
-    
+
 def extract_loc_info(dest_node):
+    """This function takes an AST node an extracts the information to be passed to the final callgraph
+
+    Alter this function to add extra node information to the callgraph
+    """
     return {
         "lineno": dest_node.lineno,
         "col_offset": dest_node.col_offset,
