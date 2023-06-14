@@ -148,6 +148,7 @@ class CallGraphGenerator(object):
                     input_file,
                     self.entry_points_contents[entry_point],
                     input_mod,
+                    self.package,
                     modules_analyzed=modules_analyzed,
                     *args,
                     **kwargs,

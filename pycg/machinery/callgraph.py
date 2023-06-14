@@ -36,15 +36,17 @@ class CallGraph(object):
         if name in self.cg and not self.modnames[name]:
             self.modnames[name] = modname
 
-    def add_edge(self, src, dest, dest_loc):
+    def add_edge(self, src, src_loc, dest, dest_loc):
         if not dest_loc:
             raise CallGraphError("Missing destination location in add_edge")
         self.add_node(src)
         self.add_node(dest)
         if dest not in self.cg[src]:
-            self.cg[src][dest] = [extract_loc_info(dest_loc)]
+            self.cg[src][dest] = {}
+            self.cg[src][dest]["calls"] = [extract_loc_info(dest_loc)]
+            self.cg[src][dest]["metadata"] = src_loc
         else:
-            self.cg[src][dest].append(extract_loc_info(dest_loc))
+            self.cg[src][dest]["calls"].append(extract_loc_info(dest_loc))
 
     def get(self):
         return self.cg

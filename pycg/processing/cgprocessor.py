@@ -32,6 +32,7 @@ class CallGraphProcessor(ProcessingBase):
         filename,
         contents,
         modname,
+        package,
         import_manager,
         scope_manager,
         def_manager,
@@ -40,7 +41,7 @@ class CallGraphProcessor(ProcessingBase):
         call_graph=None,
         modules_analyzed=None,
     ):
-        super().__init__(filename, contents, modname, modules_analyzed)
+        super().__init__(filename, contents, modname, package, modules_analyzed)
         # parent directory of file
         self.parent_dir = os.path.dirname(filename)
 
@@ -72,9 +73,17 @@ class CallGraphProcessor(ProcessingBase):
                 iter_ns = utils.join_ns(name, utils.constants.ITER_METHOD)
                 next_ns = utils.join_ns(name, utils.constants.NEXT_METHOD)
                 if self.def_manager.get(iter_ns):
-                    self.call_graph.add_edge(self.current_method, iter_ns, node)
+                    self.call_graph.add_edge(
+                        self.current_method,
+                        {"filepath": self.get_relative_path()},
+                        iter_ns,
+                        node)
                 if self.def_manager.get(next_ns):
-                    self.call_graph.add_edge(self.current_method, next_ns, node)
+                    self.call_graph.add_edge(
+                        self.current_method,
+                        {"filepath": self.get_relative_path()},
+                        next_ns,
+                        node)
 
         super().visit_For(node)
 
@@ -101,9 +110,9 @@ class CallGraphProcessor(ProcessingBase):
                 if pointer_def.get_type() == utils.constants.CLS_DEF:
                     init_ns = self.find_cls_fun_ns(name, utils.constants.CLS_INIT)
                     for ns in init_ns:
-                        self.call_graph.add_edge(self.current_method, ns, node)
+                        self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, ns, node)
                 if pointer_def.get_type() == utils.constants.EXT_DEF:
-                    self.call_graph.add_edge(self.current_method, name, node)
+                    self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, name, node)
 
     def visit_AsyncFunctionDef(self, node):
         self.visit_FunctionDef(node)
@@ -117,7 +126,7 @@ class CallGraphProcessor(ProcessingBase):
                     continue
                 names = self.closured.get(d.get_ns(), [])
                 for name in names:
-                    self.call_graph.add_edge(self.current_method, name, node)
+                    self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, name, node)
 
         self.call_graph.add_node(
             utils.join_ns(self.current_ns, node.name), self.modname
@@ -128,7 +137,7 @@ class CallGraphProcessor(ProcessingBase):
         def create_ext_edge(name, ext_modname):
             self.add_ext_mod_node(name)
             self.call_graph.add_node(name, ext_modname)
-            self.call_graph.add_edge(self.current_method, name, node)
+            self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, name, node)
 
         # First visit the child function so that on the case of
         #       func()()()
@@ -165,7 +174,7 @@ class CallGraphProcessor(ProcessingBase):
                     ext_modname = pointer.split(".")[0]
                     create_ext_edge(pointer, ext_modname)
                     continue
-                self.call_graph.add_edge(self.current_method, pointer, node)
+                self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, pointer, node)
 
             # TODO: This doesn't work
             # and leads to calls from the decorators
@@ -182,7 +191,7 @@ class CallGraphProcessor(ProcessingBase):
                 init_ns = self.find_cls_fun_ns(pointer, utils.constants.CLS_INIT)
 
                 for ns in init_ns:
-                    self.call_graph.add_edge(self.current_method, ns, node)
+                    self.call_graph.add_edge(self.current_method, {"filepath": self.get_relative_filename()}, ns, node)
 
     def analyze_submodules(self):
         super().analyze_submodules(

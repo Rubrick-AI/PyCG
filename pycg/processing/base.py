@@ -26,13 +26,14 @@ from pycg.machinery.definitions import Definition
 
 
 class ProcessingBase(ast.NodeVisitor):
-    def __init__(self, filename, contents, modname, modules_analyzed):
+    def __init__(self, filename, contents, modname, package, modules_analyzed):
         self.modname = modname
 
         self.modules_analyzed = modules_analyzed
         self.modules_analyzed.add(self.modname)
 
         self.filename = os.path.abspath(filename)
+        self.package = package
 
         self.contents = contents
         self.name_stack = []
@@ -505,7 +506,7 @@ class ProcessingBase(ast.NodeVisitor):
         with open(fname, "rt", errors="replace") as f:
             contents = f.read()
 
-        visitor = cls(fname, contents, imp, *args, **kwargs)
+        visitor = cls(fname, contents, imp, self.package, *args, **kwargs)
         visitor.analyze()
         self.merge_modules_analyzed(visitor.get_modules_analyzed())
 
@@ -545,3 +546,6 @@ class ProcessingBase(ast.NodeVisitor):
             ext_mod.add_method(ext_modname)
 
         ext_mod.add_method(name)
+
+    def get_relative_filename(self):
+        return os.path.relpath(self.filename, self.package)

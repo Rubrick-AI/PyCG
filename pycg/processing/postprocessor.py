@@ -31,6 +31,7 @@ class PostProcessor(ProcessingBase):
         input_file,
         contents,
         modname,
+        package,
         import_manager,
         scope_manager,
         def_manager,
@@ -38,7 +39,7 @@ class PostProcessor(ProcessingBase):
         module_manager,
         modules_analyzed=None,
     ):
-        super().__init__(input_file, contents, modname, modules_analyzed)
+        super().__init__(input_file, contents, modname, package, modules_analyzed)
         self.import_manager = import_manager
         self.scope_manager = scope_manager
         self.def_manager = def_manager
